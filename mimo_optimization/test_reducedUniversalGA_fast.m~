@@ -16,8 +16,8 @@ c = physconst('Lightspeed');
 
 SLLmax = 0.2;
 
-N_ant_tx = 4; M = N_ant_tx;
-N_ant_rx = 4; N = N_ant_rx;
+N_ant_tx = 4;
+N_ant_rx = 4;
 
 N_ant = N_ant_tx + N_ant_rx;
 nvars = N_ant; %N_ant - 1 positional variables + 1 freq
@@ -59,9 +59,7 @@ p0_RX = 0;
 
 
 %%
-p_tx = @(x) [p0_tx, x(pos_ind_tx)].';
-p_rx = @(x) [p0_rx, x(pos_ind_rx)].';
-p = @(x) [kron(p_tx, ones(1,N)) + kron(ones(1,M), p_rx)].';
+p_tx = @(x) [p0_TX, x(pos_ind_)].';
 f = @(x) [f0, x(freq_ind)].';
 
 
