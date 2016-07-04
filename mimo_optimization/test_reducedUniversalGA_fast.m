@@ -53,15 +53,15 @@ Z_max = 3e-2; %[m]
 d_min = lambda0/2; %[m] CURRENTLY ARBITRARY
 
 %% 2. Setup the parameter space for antenna positions
-p0_TX = 0; % First antenna is fixed!
-p0_RX = 0;
+p0_tx = 0; % First antenna is fixed!
+p0_rx = 0;
 
 
 
 %%
 p_tx = @(x) [p0_tx, x(pos_ind_tx)].';
 p_rx = @(x) [p0_rx, x(pos_ind_rx)].';
-p = @(x) [kron(p_tx, ones(1,N)) + kron(ones(1,M), p_rx)].';
+p = @(x) [kron(p_tx(x), ones(N,1)) + kron(ones(M,1), p_rx(x))];
 f = @(x) [f0, x(freq_ind)].';
 
 
