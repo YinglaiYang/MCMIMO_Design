@@ -1,6 +1,7 @@
 clc, clear, close all;
-addpath(genpath('../radar_system'));
-addpath(genpath('../radar_system/beamwidth'));
+addpath(genpath('../../radar_system'));
+addpath(genpath('../../radar_system/beamwidth'));
+addpath(genpath('../../study/OPT2'));
 
 % This script uses an genetic algorithm to find an optimum array
 % configuration. It uses the same parameters and functions as the
@@ -16,10 +17,7 @@ c = physconst('Lightspeed');
 
 SLLmax = 0.2;
 
-N_ant_tx = 4; M = N_ant_tx;
-N_ant_rx = 4; N = N_ant_rx;
-
-N_ant = N_ant_tx + N_ant_rx;
+N_ant = 8;
 nvars = N_ant; %N_ant - 1 positional variables + 1 freq
 
 f0 = 80e9; %[Hz] fixed frequency
@@ -30,16 +28,12 @@ lambda0 = c/f0;
 % Development information
 % -----------------------
 % Vector for cost function:
-% [ptx1, .., ptxM, prx1, .., prxN, f1]
+% [p1, p2, p3, p4, p5, p6, p7, f1] - Seven free antennas and two free frequencies. The first
+%                                    antenna p0 is fixed at 0.
 %
-% NOTE: Both tx and rx arrays have one fixed antenna each. That means that
-% only N_ant_TX - 1 and N_ant_RX - 1 or N_ant - 2 antenna positions have to be
-% optimized.
-pos_ind_tx = 1:N_ant_tx-1;   % [0, x(pos_ind_tx)] -> px_tx
-pos_ind_rx = N_ant_tx:N_ant - 2; % [0, x(pos_ind_rx)] -> px_rx
+pos_ind = 1:nvars-1;   % [0, x(pos_ind)] -> px
 freq_ind = nvars;      % [f0, x(freq_ind)] -> f
 
-% TODO: Is it ok if both arrays have a fixed antenna at 0?
 
 
 
@@ -53,15 +47,12 @@ Z_max = 3e-2; %[m]
 d_min = lambda0/2; %[m] CURRENTLY ARBITRARY
 
 %% 2. Setup the parameter space for antenna positions
-p0_tx = 0; % First antenna is fixed!
-p0_rx = 0;
+p0 = 0; % First antenna is fixed!
 
 
 
 %%
-p_tx = @(x) [p0_tx, x(pos_ind_tx)].';
-p_rx = @(x) [p0_rx, x(pos_ind_rx)].';
-p = @(x) [kron(p_tx(x), ones(N,1)) + kron(ones(M,1), p_rx(x))];
+p = @(x) [p0, x(pos_ind)].';
 f = @(x) [f0, x(freq_ind)].';
 
 
@@ -133,15 +124,13 @@ assert(isequal(size(lb), [1,nvars])); %make sure that each variable has its own 
 
 %% 6. Optimize:
 options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
-                     'PopulationSize',5, ... 
+                     'PopulationSize',100, ... 
                      'NonlinConAlgorithm','auglag', ...
                      'CreationFcn',@gacreationlinearfeasible, ...
                      'TolFun',1e-6, ...
                      'Display','iter', ...
                      'PlotFcn',@gaplotbestf, ...
                      'UseParallel',true);
-                 
-% Using the 'penalty' algorithm for nonlinear constraints would require the CreationFcn: @gacreationnonlinearfeasible  
 
 [p_opt, crb_opt, exitflag, output, final_population, final_scores] = ga(cfun, nvars, A, b, Aeq, beq, lb, ub, nl_confun, options);
 
