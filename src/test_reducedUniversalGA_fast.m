@@ -25,6 +25,14 @@ nvars = N_ant-2+1; %N_ant - 2 positional variables + 1 freq (Both tx and rx arra
 f0 = 80e9; %[Hz] fixed frequency
 lambda0 = c/f0;
 
+%% Create struct
+env.N_ant_tx = N_ant_tx;
+env.N_ant_rx = N_ant_rx;
+env.N_freq = 2;
+
+env.p0_tx = 0;
+env.p0_rx = 0;
+env.f0 = f0;
 
 
 % Development information
@@ -35,13 +43,6 @@ lambda0 = c/f0;
 % NOTE: Both tx and rx arrays have one fixed antenna each. That means that
 % only N_ant_TX - 1 and N_ant_RX - 1 or N_ant - 2 antenna positions have to be
 % optimized.
-pos_ind_tx = 1:N_ant_tx-1;   % [0, x(pos_ind_tx)] -> px_tx
-pos_ind_rx = N_ant_tx:N_ant - 2; % [0, x(pos_ind_rx)] -> px_rx
-freq_ind = nvars;      % [f0, x(freq_ind)] -> f
-
-% TODO: Is it ok if both arrays have a fixed antenna at 0?
-
-
 
 
 tic
@@ -75,19 +76,20 @@ rho = N_ant;
 % - power identical for all frequencies
 % - power identical for all antenna positions
 % - p_x is centered to 0 by this function
-cfun = @(x) ...
-            1/(f(x)' * f(x)) / var(p(x),1);
+% cfun = @(x) ...
+%             1/(f(x)' * f(x)) / var(p(x),1);
+cfun = @(x) cfun_template(x,env);
 
 % SLL function        
 N_r = 20;
 
-est_sll_fun = @(x, bw) getSLL_universal(p(x), f(x), bw, N_r);
+% est_sll_fun = @(x, bw) getSLL_universal(p(x), f(x), bw, N_r);
+% 
+% %--------
+% vt_gcd_fun = @(x) d_min * mgcd(f(x));
+% est_bw_fun = @(x) est_beamwidth_fast(p(x), f(x));
 
-%--------
-vt_gcd_fun = @(x) d_min * mgcd(f(x));
-est_bw_fun = @(x) est_beamwidth_fast(p(x), f(x));
-
-nl_confun = @(x) nl_constraints3(x, est_bw_fun, est_sll_fun, SLLmax);
+nl_confun = @(x) nl_constraints3(x, SLLmax, env);
 
 
 %% 4. Constraints
@@ -131,7 +133,7 @@ beq = [];
 lb_px = zeros(1,N_ant-2);
 ub_px = Z_max * ones(1,N_ant-2);
 
-lb_f = [80e9];
+lb_f = [85e9];
 ub_f = [100e9];
 
 lb = [lb_px, lb_f];
