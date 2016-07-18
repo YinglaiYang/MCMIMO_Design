@@ -6,8 +6,6 @@ addpath(genpath('../radar_system/beamwidth'));
 % lower frequency is optimized, while the higher carrier frequency is
 % fixed.
 
-
-
 %% 1. All parameters
 c = physconst('Lightspeed');
 
@@ -17,18 +15,18 @@ N_ant_tx = 4; M = N_ant_tx;
 N_ant_rx = 4; N = N_ant_rx;
 
 N_ant = N_ant_tx + N_ant_rx;
-nvars = N_ant-2+1; %N_ant - 2 positional variables + 1 freq (Both tx and rx arrays have one fixed antenna)
+nvars = N_ant-2+0; %N_ant - 2 positional variables + 1 freq (Both tx and rx arrays have one fixed antenna)
 
 f0 = 100e9; %[Hz] fixed frequency
 
 % Define a minimum distance for the antennas in the array.
-f_ref = 80e9;
+f_ref = 100e9;
 lambda_ref = c/f_ref;
 
 %% Create struct
 env.N_ant_tx = N_ant_tx;
 env.N_ant_rx = N_ant_rx;
-env.N_freq = 2;
+env.N_freq = 1;
 
 env.p0_tx = 0;
 env.p0_rx = 0;
@@ -49,7 +47,7 @@ tic
 % Design limits
 % -------------
 % 1. Sensor size limits max aperture
-Z_max = 3e-2; %[m]
+Z_max = 30e-2; %[m]
 % 2. Minimum distance between antennas
 d_min = lambda_ref/2; %[m] CURRENTLY ARBITRARY
 
@@ -57,13 +55,6 @@ d_min = lambda_ref/2; %[m] CURRENTLY ARBITRARY
 p0_tx = 0; % First antenna is fixed!
 p0_rx = 0;
 
-
-
-%%
-p_tx = @(x) [p0_tx, x(pos_ind_tx)].';
-p_rx = @(x) [p0_rx, x(pos_ind_rx)].';
-p = @(x) [kron(p_tx(x), ones(N,1)) + kron(ones(M,1), p_rx(x))];
-f = @(x) [f0, x(freq_ind)].';
 
 
 
@@ -116,10 +107,13 @@ A_comb = zeros(M+N-2, M+N-2);
 A_comb(1:M-1,1:M-1) = A_tx;
 A_comb(M:end,M:end) = A_rx;
 
-A = [A_comb, zeros(M+N-2,1)];
+A = A_comb;%[A_comb, zeros(M+N-2,1)];
 
 
 b = -d_min * ones(N_ant-2,1);
+
+A=[];
+b=[];
 
 
 assert(isequal(size(A), [N_ant-2,nvars])); %make sure that we have one min. spacing constraint for each free antenna
@@ -136,8 +130,8 @@ ub_px = Z_max * ones(1,N_ant-2);
 lb_f = [80e9];
 ub_f = [95e9];
 
-lb = [lb_px, lb_f];
-ub = [ub_px, ub_f];
+lb = lb_px;%[lb_px, lb_f];
+ub = ub_px;%[ub_px, ub_f];
 
 assert(isequal(size(lb), size(ub))); 
 assert(isequal(size(lb), [1,nvars])); %make sure that each variable has its own bounds
@@ -147,7 +141,7 @@ assert(isequal(size(lb), [1,nvars])); %make sure that each variable has its own 
 
 %% 6. Optimize:
 options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
-                     'PopulationSize',1000, ... 
+                     'PopulationSize',20000, ... 
                      'NonlinConAlgorithm','auglag', ...
                      'CreationFcn',@gacreationlinearfeasible, ...
                      'TolFun',1e-6, ...
@@ -159,6 +153,8 @@ options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
 
 [p_opt, crb_opt, exitflag, output, final_population, final_scores] = ga(cfun, nvars, A, b, Aeq, beq, lb, ub, nl_confun, options);
 
-save('workspace_reducedUniversalGA.mat')
+save('workspace_reducedUniversalGA_SC.mat')
 
 toc
+
+exit

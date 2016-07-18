@@ -4,9 +4,17 @@ function [ sll, theta_SLL ] = getSLL( px, fc, maxSLL )
 c=physconst('lightspeed');
 
 N_u=numel(px)*numel(fc)*10;
-N_r=numel(fc)*10;
-r_max = 0.5*c / abs(fc(2)-fc(1));
-ranges = 0 + linspace(0,r_max, N_r);
+
+if numel(fc)==1
+	N_r=1;
+	r_max=0;
+	ranges=0;
+else
+	N_r=numel(fc)*10;
+	r_max = 0.5*c / abs(fc(2)-fc(1));
+	ranges = 0 + linspace(0,r_max, N_r);
+end
+
 
 % Only use a reference angle at ux=-1
 ux_min = -1.0;
