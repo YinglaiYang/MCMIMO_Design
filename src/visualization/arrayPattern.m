@@ -1,4 +1,4 @@
-function [ ap ] = arrayPattern( px, fc, N_ux, N_r )
+function [ arraypattern ] = arrayPattern( px, fc, N_ux, N_r )
 %ARRAYPATTERN The array pattern of a linear array
 %   Detailed explanation goes here
 
@@ -23,7 +23,7 @@ ux_max = 1.0;
 ux = linspace(ux_min,ux_max,N_ux).';
 
 %% 2. Calculate grid values (do it for all ranges)
-ap=zeros(length(ranges),length(ux));
+arraypattern=zeros(length(ranges),length(ux));
 
 % columnize
 px = px(:);
@@ -44,9 +44,9 @@ for rInd=1:length(ranges)
     r=ranges(rInd);
     thetax = [ux.'; r*ones(1, N_ux)];
 
-    ap(rInd,:) = P_ML_fun(thetax);
+    arraypattern(rInd,:) = P_ML_fun(thetax);
 end
-ap=ap/(ap(1,1));
+arraypattern=arraypattern/(arraypattern(1,1));
 
 
 end
