@@ -3,7 +3,13 @@ function [ sll, theta_SLL ] = getSLL( px, fc, maxSLL )
 %   Detailed explanation goes here
 c=physconst('lightspeed');
 
-N_u=numel(px)*numel(fc)*10;
+Z_ph = max(px) - min(px);
+Z_vt_max = Z_ph * max(fc) / c;
+
+% Limits of beamwidth
+bw_min = 1 / (2*Z_vt_max); % Minimum possible beamwidth
+max_N_peaks = round(2/bw_min); %Estimation of number of peaks in the ROI of u=[-1,1]
+N_u = max_N_peaks * 10; %*10 to have extra values and be on the safe side
 
 if numel(fc)==1
 	N_r=1;
