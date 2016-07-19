@@ -64,7 +64,7 @@ if N_ux > 0
     arraypattern=arraypattern/(arraypattern(1,1));
     
     %% exclude the mainlobe
-    lobes=arraypattern<.5*maxSLL;
+    lobes=arraypattern<.3*maxSLL;
     [~,mainLobeInd]=max(lobes,[],2);
     
     for rInd=1:N_r
