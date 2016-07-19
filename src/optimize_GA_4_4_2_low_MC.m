@@ -85,39 +85,9 @@ nl_confun = @(x) nl_constraints3(x, SLLmax, env);
 
 %% 4. Constraints
 %% 4.2 Maximum aperture
-% Maybe this could become a linear constraint when the strict order
-% constraint is enforced in the nonlinear constraint functions
-% A = [-1  0   0;
-%       1 -1   0];
-
-% This linear constraint enforces the antennas to keep a minimum distance
-% from each other
-%
-% 1. The TX antennas
-antennas_tx      = -ones(1,N_ant_tx-1);
-prev_antennas_tx = +ones(1,N_ant_tx-2);
-A_tx = [diag(antennas_tx) + diag(prev_antennas_tx,-1)];
-% 2. The RX antennas
-antennas_rx      = -ones(1,N_ant_rx-1);
-prev_antennas_rx = +ones(1,N_ant_rx-2);
-A_rx = [diag(antennas_rx) + diag(prev_antennas_rx,-1)];
-
-% Combine into one matrix
-A_comb = zeros(M+N-2, M+N-2);
-A_comb(1:M-1,1:M-1) = A_tx;
-A_comb(M:end,M:end) = A_rx;
-
-A = [A_comb, zeros(M+N-2,1)];
-
-
-b = -d_min * ones(N_ant-2,1);
-
 A=[];
 b=[];
 
-
-assert(isequal(size(A), [N_ant-2,nvars])); %make sure that we have one min. spacing constraint for each free antenna
-assert(isequal(size(b), [N_ant-2,1]));
  
 % Other constraints
 Aeq = [];
@@ -140,8 +110,7 @@ assert(isequal(size(lb), [1,nvars])); %make sure that each variable has its own 
 %% 5. Parameters for GA
 
 %% 6. Optimize:
-options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
-                     'PopulationSize',20000, ... 
+options = gaoptimset('PopulationSize',20000, ... 
                      'NonlinConAlgorithm','auglag', ...
                      'CreationFcn',@gacreationlinearfeasible, ...
                      'TolFun',1e-6, ...
