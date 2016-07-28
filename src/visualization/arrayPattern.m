@@ -39,7 +39,7 @@ a_ref = exp(1j*Bx*thetax_ref);
 
 % Calculate the resulting value of the array pattern at the given point
 a=@(theta)(exp(1j*Bx*theta));
-P_ML_fun=@(theta)(-(abs(a(theta)'*a_ref)).^2);
+P_ML_fun=@(theta)((abs(a(theta)'*a_ref)).^2);
 for rInd=1:length(ranges)
     r=ranges(rInd);
     thetax = [ux.'; r*ones(1, N_ux)];
