@@ -6,6 +6,8 @@ addpath(genpath('../radar_system/beamwidth'));
 % lower frequency is optimized, while the higher carrier frequency is
 % fixed.
 
+% Date: 28-06-2016
+
 %% 1. All parameters
 c = physconst('Lightspeed');
 
@@ -47,7 +49,7 @@ tic
 % Design limits
 % -------------
 % 1. Sensor size limits max aperture
-Z_max = 30e-2; %[m]
+Z_max = 50e-2; %[m]
 % 2. Minimum distance between antennas
 d_min = lambda_ref/2; %[m] CURRENTLY ARBITRARY
 
@@ -141,7 +143,7 @@ assert(isequal(size(lb), [1,nvars])); %make sure that each variable has its own 
 
 %% 6. Optimize:
 options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
-                     'PopulationSize',2000, ... 
+                     'PopulationSize',20000, ... 
                      'NonlinConAlgorithm','auglag', ...
                      'CreationFcn',@gacreationlinearfeasible, ...
                      'TolFun',1e-6, ...
@@ -153,7 +155,7 @@ options = gaoptimset('MutationFcn',@mutationadaptfeasible, ...
 
 [p_opt, crb_opt, exitflag, output, final_population, final_scores] = ga(cfun, nvars, A, b, Aeq, beq, lb, ub, nl_confun, options);
 
-save('workspace_reducedUniversalGA_SC.mat')
+save('workspace_SC_reducedUniversalGA.mat')
 
 toc
 
