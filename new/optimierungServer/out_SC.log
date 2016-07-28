@@ -1,0 +1,26 @@
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2016 The MathWorks, Inc.
+                   R2016a (9.0.0.341360) 64-bit (glnxa64)
+                             February 11, 2016
+
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+
+	Academic License
+
+>> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> Starting parallel pool (parpool) using the 'local' profile ... connected to 12 workers.
+
+                           Best       max        Stall
+Generation  f-count        f(x)     constraint  Generations
+    1       106000       1096.02            0      0
+    2       262000       375.143            0      0
+    3       986000       140.583            0      0
+    4       1722000       111.567            0      0
+    5       2324000        111.47    0.0008916      0
+Optimization terminated: average change in the fitness value less than options.FunctionTolerance
+ and constraint violation is less than options.ConstraintTolerance.
+>> >> >> >> Elapsed time is 4856.937803 seconds.
+>> >> 
